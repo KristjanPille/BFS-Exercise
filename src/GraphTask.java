@@ -9,14 +9,14 @@ public class GraphTask {
    public static void main (String[] args) {
       GraphTask a = new GraphTask();
       a.run();
-      throw new RuntimeException ("Nothing implemented yet!"); // delete this
    }
 
+   private int V;
    /** Actual main method to run examples and everything. */
    public void run() {
       Graph g = new Graph ("G");
-      g.createRandomSimpleGraph (6, 9);
-      System.out.println (g);
+      g.createRandomSimpleGraph (0, 0);
+      g.Graphsolution(g);
 
       // TODO!!! Your experiments here
    }
@@ -25,9 +25,10 @@ public class GraphTask {
    class Vertex {
 
       private String id;
-      private Vertex next;
-      private Arc first;
+      private Vertex next;//tipp
+      private Arc first;//kaar
       private int info = 0;
+
       // You can add more fields, if needed
 
       Vertex (String s, Vertex v, Arc e) {
@@ -84,7 +85,6 @@ public class GraphTask {
       private String id;
       private Vertex first;
       private int info = 0;
-      // You can add more fields, if needed
 
       Graph (String s, Vertex v) {
          id = s;
@@ -126,6 +126,7 @@ public class GraphTask {
          Vertex res = new Vertex (vid);
          res.next = first;
          first = res;
+         V++;
          return res;
       }
 
@@ -226,9 +227,54 @@ public class GraphTask {
             edgeCount--;  // a new edge happily created
          }
       }
-
-      // TODO!!! Your Graph methods here! Probably your solution belongs here.
+      /**
+       * Meetod on graafi laiuti läbimise algoritm, mis kasutab maatriksit
+       * tippude läbimiseks. Ei kasuta kaari!!!
+       * Tagastusväärtus: List tippudest mis on külastatud, külastamise järjekorras.
+       * Juhul, kui graph on võrdne null, visatakse error.
+       * createRandomSimpleGraph meetodis on muud vea juhud käsitletud.
+       */
+      public List<String> Graphsolution(Graph graph){
+         if (graph instanceof Graph && graph.first != null && graph.first.next != null){
+            List<String> visited = new ArrayList<>();
+            for(Map.Entry<String, List<String>> entry : vertexMap(graph).entrySet()) {
+               String key = entry.getKey();
+               List<String> value = entry.getValue();
+               if (!visited.contains(key)){
+                  visited.add(key);
+               }
+               for (String s: value) {
+                  if (!visited.contains(s)){
+                     visited.add(s);
+                  }
+               }
+            }
+            return visited;
+         }
+         throw new RuntimeException(graph + " is not a valid graph!");
+      }
+      /**
+       * Meetod mis võtab sisendiks graafi ning tagastab
+       * sõnastiku graafi tippudest, kasutades createAdjMatrix
+       * meetodit.
+       */
+      public Map<String, List<String>> vertexMap(Graph graph){
+         Map<String, List<String>> vertexes = new HashMap<>();
+         int vertexid = 1;
+         int ver = 1;
+         for (int[] v: graph.createAdjMatrix()) {
+            List<String> vertex = new ArrayList<>();
+            for (int s: v) {
+               if (s == 1){
+                  vertex.add("v" + ver);
+               }
+               ver++;
+            }
+            vertexes.put("v" + vertexid, vertex);
+            vertexid++;
+            ver =1;
+         }
+         return vertexes;
+      }
    }
-
-} 
-
+}
